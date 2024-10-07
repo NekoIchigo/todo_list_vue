@@ -19,7 +19,9 @@
       </div>
 
       <div>
-        <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
+        <button type="submit" @click.prevent="login" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+            Sign in
+        </button>
       </div>
     </form>
 
@@ -39,7 +41,9 @@ const formData = ref({
 
 const login = () => {
     isLoading.value = true;
-    axios.post('/api/login', formData.value).then((response) => {
+    axios.get("/sanctum/csrf-cookie");
+
+    axios.post('/api/users', formData.value).then((response) => {
         console.log(response);
     }).catch((error) => {
         console.error("error: " + error);
@@ -47,4 +51,6 @@ const login = () => {
         isLoading.value = false;
     });
 }
+
+
 </script>
