@@ -27,3 +27,9 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### change this line in /src/lib/axios.js
+
+```sh
+baseURL: "http://localhost:8000", // change the port for your laravel port
+```
