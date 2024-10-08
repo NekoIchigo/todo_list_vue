@@ -18,7 +18,7 @@
       </div>
     </div>
     <UserList v-if="!isLoading" :list="userList" @click="selectUser($event)" @delete="showDeleteConfirmation" />
-    <UserModal v-if="isModalOpen" @close="isModalOpen = false" :item="selectedUser" />
+    <UserModal v-if="isModalOpen" @close="close()" :item="selectedUser" />
     <DeleteModal v-if="isDeleteShow" @close="isDeleteShow = false"
       :message="`Delete this user : ${selectedUser['username']} ?`" @confirm="deleteUser()" />
   </div>
@@ -28,7 +28,7 @@
 import axios from '@/lib/axios';
 import UserList from '@/views/components/Lists/UserList.vue';
 import ArrowPath from '@/views/components/Icons/ArrowPath.vue';
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import DefaultButton from '@/views/components/Buttons/DefaultButton.vue';
 import UserModal from '@/views/components/Modal/UserModal.vue';
 import ChevronLeft from '@/views/components/Icons/ChevronLeft.vue';
@@ -42,6 +42,7 @@ const isDeleteShow = ref(false);
 const selectedUser = ref(null);
 const page = ref(1);
 const lastPage = ref(1);
+const message = inject("message");
 
 const fetchUserList = () => {
   isLoading.value = true;
@@ -83,6 +84,8 @@ const deleteUser = () => {
   isLoading.value = true;
   isDeleteShow.value = false
   axios.delete("/api/users/" + selectedUser.value.id).then(response => {
+    message.value = response.data.message;
+
     fetchUserList();
   }).catch(error => {
     console.error(error?.response?.data?.message);
@@ -91,6 +94,10 @@ const deleteUser = () => {
   });
 }
 
+const close = () => {
+  isModalOpen.value = false;
+  fetchUserList();
+}
 onMounted(() => {
   fetchUserList();
 });

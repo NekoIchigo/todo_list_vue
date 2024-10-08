@@ -40,7 +40,7 @@ import DefaultButton from '@/views/components/Buttons/DefaultButton.vue';
 import DefaultInput from '@/views/components/Inputs/DefaultInput.vue';
 import XMark from '@/views/components/Icons/XMark.vue';
 import RadioGroup from '@/views/components/Radio/RadioGroup.vue';
-import { onMounted, ref } from 'vue';
+import { inject, onMounted, ref } from 'vue';
 import axios from '@/lib/axios';
 
 const props = defineProps({
@@ -48,6 +48,7 @@ const props = defineProps({
         default: null,
     }
 });
+const message = inject("message");
 
 const formData = ref({
     id: null,
@@ -67,12 +68,22 @@ const isLoading = ref(false);
 const userTypes = ['admin', 'user'];
 const emits = defineEmits(['close']);
 
-const updateUser  = () => {
+const updateUser = () => {
     isLoading.value = true;
     axios.put("/api/users/" + formData.value.id, formData.value).then(response => {
         console.log(response)
+        message.value = response.data.message;
+        emits('close');
     }).catch(error => {
         console.error(error?.response?.data?.message);
+        const errors = error?.response?.data?.errors;
+        if (errors) {
+            formData.value["username_error"] = errors["username"]?.join();
+            formData.value["first_name_error"] = errors["user_detail"]["first_name"]?.join();
+            formData.value["last_name_error"] = errors["user_detail"]["last_name"]?.join();
+            formData.value["user_type_error"] = errors["user_type"]?.join();
+            formData.value["email_error"] = errors["user_detail"]["email"]?.join();
+        }
     }).finally(() => {
         isLoading.value = false;
     });
@@ -82,8 +93,18 @@ const createUser = () => {
     isLoading.value = true;
     axios.post("/api/users", formData.value).then(response => {
         console.log(response)
+        const message = inject("message");
+        emits('close');
     }).catch(error => {
         console.error(error?.response?.data?.message);
+        const errors = error?.response?.data?.errors;
+        if (errors) {
+            formData.value["username_error"] = errors["username"]?.join();
+            formData.value["first_name_error"] = errors["user_detail"]["first_name"]?.join();
+            formData.value["last_name_error"] = errors["user_detail"]["last_name"]?.join();
+            formData.value["user_type_error"] = errors["user_type"]?.join();
+            formData.value["email_error"] = errors["user_detail"]["email"]?.join();
+        }
     }).finally(() => {
         isLoading.value = false;
     });
