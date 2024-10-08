@@ -17,8 +17,10 @@
         <p class="text-indigo-600">Loading ...</p>
       </div>
     </div>
-    <UserList v-if="!isLoading" :list="userList" @click="selectUser($event)" />
+    <UserList v-if="!isLoading" :list="userList" @click="selectUser($event)" @delete="showDeleteConfirmation" />
     <UserModal v-if="isModalOpen" @close="isModalOpen = false" :item="selectedUser" />
+    <DeleteModal v-if="isDeleteShow" @close="isDeleteShow = false"
+      :message="`Delete this user : ${selectedUser['username']} ?`" @confirm="deleteUser()" />
   </div>
 </template>
 
@@ -31,10 +33,12 @@ import DefaultButton from '@/views/components/Buttons/DefaultButton.vue';
 import UserModal from '@/views/components/Modal/UserModal.vue';
 import ChevronLeft from '@/views/components/Icons/ChevronLeft.vue';
 import ChevronRight from '@/views/components/Icons/ChevronRight.vue';
+import DeleteModal from '@/views/components/Modal/DeleteModal.vue';
 
 const userList = ref([]);
 const isLoading = ref(false);
 const isModalOpen = ref(false);
+const isDeleteShow = ref(false);
 const selectedUser = ref(null);
 const page = ref(1);
 const lastPage = ref(1);
@@ -49,6 +53,11 @@ const fetchUserList = () => {
   }).finally(() => {
     isLoading.value = false;
   });
+}
+
+const showDeleteConfirmation = (event) => {
+  selectedUser.value = event;
+  isDeleteShow.value = true;
 }
 
 const nextPage = () => {
@@ -68,6 +77,18 @@ const prevPage = () => {
 const selectUser = (event) => {
   isModalOpen.value = true;
   selectedUser.value = event;
+}
+
+const deleteUser = () => {
+  isLoading.value = true;
+  isDeleteShow.value = false
+  axios.delete("/api/users/" + selectedUser.value.id).then(response => {
+    fetchUserList();
+  }).catch(error => {
+    console.error(error?.response?.data?.message);
+  }).finally(() => {
+    isLoading.value = false;
+  });
 }
 
 onMounted(() => {

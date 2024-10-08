@@ -23,6 +23,7 @@ import DefaultInput from '@/views/components/Inputs/DefaultInput.vue';
 const router = useRouter();
 const isLoading = ref(false);
 const userType = inject("userType");
+const userId = inject("userId");
 const formData = ref({
   username: "",
   password: "",
@@ -38,6 +39,7 @@ const login = () => {
   axios.get("/sanctum/csrf-cookie").then((response) => {
     axios.post('/api/login', formData.value).then((response) => {
       userType.value = response.data.data['user_type'];
+      userId.value = response.data.data['user_id'];
       router.push('/todo');
     }).catch((error) => {
       console.error(error?.response?.data?.message)

@@ -13,7 +13,7 @@
                     <div class="w-12">
                         <p class="text-sm leading-6 text-gray-900 capitalize">{{ item["user_type"] }}</p>
                     </div>
-                    <div class="w-12">
+                    <div v-if="item['id'] != userId" class="w-12" @click.stop="$emit('delete', item)">
                         <p class="text-red-400 hover:text-red-600">Delete</p>
                     </div>
                 </div>
@@ -23,6 +23,11 @@
 </template>
 
 <script setup>
+import { inject } from 'vue';
+
 const props = defineProps(['list']);
 const emits = defineEmits(['click', 'delete']);
+
+const userId = inject("userId");
+
 </script>
