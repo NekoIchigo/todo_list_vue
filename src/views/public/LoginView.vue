@@ -6,7 +6,7 @@
         <DefaultInput label="Username" type="text" v-model="formData.username" />
         <DefaultInput label="Password" type="password" v-model="formData.password" />
         <div>
-          <DefaultButton label="Log in" @click="login()" />
+          <DefaultButton label="Log in" @click="login()" :isLoading="isLoading" />
         </div>
       </form>
     </div>
@@ -15,10 +15,12 @@
 
 <script setup>
 import axios from '@/lib/axios';
+import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import DefaultButton from '@/views/components/Buttons/DefaultButton.vue';
 import DefaultInput from '@/views/components/Inputs/DefaultInput.vue';
 
+const router = useRouter();
 const isLoading = ref(false);
 const formData = ref({
   username: "",
@@ -30,7 +32,7 @@ const login = () => {
   axios.get("/sanctum/csrf-cookie");
 
   axios.post('/api/login', formData.value).then((response) => {
-    console.log(response);
+    router.push('/home');
   }).catch((error) => {
     console.error("error: " + error);
   }).finally(() => {
