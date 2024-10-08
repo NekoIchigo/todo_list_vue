@@ -16,12 +16,13 @@
 <script setup>
 import axios from '@/lib/axios';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
 import DefaultButton from '@/views/components/Buttons/DefaultButton.vue';
 import DefaultInput from '@/views/components/Inputs/DefaultInput.vue';
 
 const router = useRouter();
 const isLoading = ref(false);
+const userType = inject("userType");
 const formData = ref({
   username: "",
   password: "",
@@ -36,7 +37,8 @@ const login = () => {
 
   axios.get("/sanctum/csrf-cookie").then((response) => {
     axios.post('/api/login', formData.value).then((response) => {
-      router.push('/home');
+      userType.value = response.data.data['user_type'];
+      router.push('/todo');
     }).catch((error) => {
       console.error(error?.response?.data?.message)
       const errors = error?.response?.data?.errors;
@@ -50,6 +52,5 @@ const login = () => {
     });
   });
 }
-
 
 </script>

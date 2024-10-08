@@ -4,15 +4,21 @@
       <p class="text-indigo-600 text-3xl my-5 text-center">
         User Management
       </p>
-      <DefaultButton v-if="!isLoading" label="Add User" class="mb-5" @click="selectUser(null)" />
+      <div v-if="!isLoading" class="flex justify-between ">
+        <DefaultButton class="w-28 mb-5" label="Add User" @click="selectUser(null)" />
+        <div class="flex gap-5 h-10">
+          <ChevronLeft v-if="page > 1" class="text-indigo-600 rounded-md p-2 hover:cursor-pointer" @click="prevPage" />
+          <ChevronRight v-if="page < lastPage" class="text-indigo-600 rounded-md p-2 hover:cursor-pointer"
+            @click="nextPage" />
+        </div>
+      </div>
       <div v-if="isLoading" class="mt-10 flex gap-2 items-center justify-center animate-pulse">
         <ArrowPath class="animate-spin text-indigo-600" />
         <p class="text-indigo-600">Loading ...</p>
       </div>
     </div>
-    <UserList :list="userList" @click="selectUser($event)" />
+    <UserList v-if="!isLoading" :list="userList" @click="selectUser($event)" />
     <UserModal v-if="isModalOpen" @close="isModalOpen = false" :item="selectedUser" />
-
   </div>
 </template>
 
@@ -23,21 +29,40 @@ import ArrowPath from '@/views/components/Icons/ArrowPath.vue';
 import { onMounted, ref } from 'vue';
 import DefaultButton from '@/views/components/Buttons/DefaultButton.vue';
 import UserModal from '@/views/components/Modal/UserModal.vue';
+import ChevronLeft from '@/views/components/Icons/ChevronLeft.vue';
+import ChevronRight from '@/views/components/Icons/ChevronRight.vue';
 
 const userList = ref([]);
 const isLoading = ref(false);
 const isModalOpen = ref(false);
 const selectedUser = ref(null);
+const page = ref(1);
+const lastPage = ref(1);
 
 const fetchUserList = () => {
   isLoading.value = true;
-  axios.get("/api/users").then((response) => {
+  axios.get("/api/users?page=" + page.value).then((response) => {
+    lastPage.value = response.data.data["last_page"];
     userList.value = response.data.data.data;
   }).catch((error) => {
     console.error(error?.response?.data?.message);
   }).finally(() => {
     isLoading.value = false;
   });
+}
+
+const nextPage = () => {
+  if (page.value < lastPage.value) {
+    page.value++;
+    fetchUserList();
+  }
+}
+
+const prevPage = () => {
+  if (page.value > 1) {
+    page.value--;
+    fetchUserList();
+  }
 }
 
 const selectUser = (event) => {

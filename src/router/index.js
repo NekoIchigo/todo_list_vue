@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/views/private/HomeView.vue";
+import HomeView from "@/views/private/UserManagementView.vue";
 import TodoView from "@/views/private/TodoView.vue";
 import PrivateView from "@/views/private/PrivateView.vue";
 import LoginView from "@/views/public/LoginView.vue";

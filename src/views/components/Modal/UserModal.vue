@@ -22,7 +22,7 @@
                             <RadioGroup :list="userTypes" v-model="formData.user_type" />
                         </div>
                         <div class="mt-5 sm:mt-6 flex gap-4">
-                            <DefaultButton label="Delete" class="bg-red-500 hover:bg-red-400"
+                            <DefaultButton label="Cancel" class="bg-gray-500 hover:bg-gray-400"
                                 @click="$emit('close')" />
                             <DefaultButton :is-loading="isLoading" :label="item ? 'Update' : 'Create'"
                                 @click="item ? updateUser() : createUser()" />
