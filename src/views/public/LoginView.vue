@@ -31,23 +31,23 @@ const formData = ref({
 
 const login = () => {
   isLoading.value = true;
-  axios.get("/sanctum/csrf-cookie");
-
   formData.value.usernameError = null;
   formData.value.passwordError = null;
 
-  axios.post('/api/login', formData.value).then((response) => {
-    router.push('/home');
-  }).catch((error) => {
-    console.error(error?.response?.data?.message)
-    const errors = error?.response?.data?.errors;
-    if(errors) {
-      formData.value.usernameError = errors['username']?.join();
-      formData.value.passwordError = errors['password']?.join();
-    }
-    console.error(error?.response?.data?.errors);
-  }).finally(() => {
-    isLoading.value = false;
+  axios.get("/sanctum/csrf-cookie").then((response) => {
+    axios.post('/api/login', formData.value).then((response) => {
+      router.push('/home');
+    }).catch((error) => {
+      console.error(error?.response?.data?.message)
+      const errors = error?.response?.data?.errors;
+      if (errors) {
+        formData.value.usernameError = errors['username']?.join();
+        formData.value.passwordError = errors['password']?.join();
+      }
+      console.error(error?.response?.data?.errors);
+    }).finally(() => {
+      isLoading.value = false;
+    });
   });
 }
 
